@@ -49,17 +49,21 @@ public class BaseInterface extends JFrame {
 	protected JTextField getJTextField( int largura ) {
 
 		JTextField tf = new JTextField();
-		tf.setBounds( 120, linha, largura, 23 );
+		tf.setBounds( 160, linha, largura, 23 );
 		
 		return tf;
 	}
 
-	public void saltaLinha() {
-		linha += saltoLinha;
+	public int saltoLinha() {
+		return linha += saltoLinha;
 	}
 	
 	protected JLabel getJLabel( String label ) {
 		return( getJLabel( linha + saltoLinha, label ) );
+	}
+	
+	protected JLabel getJLabel( String label, int largura ) {
+		return( getJLabel( linha + saltoLinha, label, largura ) );
 	}
 
 	protected JLabel getJLabel( int linha, String label ) {
@@ -67,6 +71,15 @@ public class BaseInterface extends JFrame {
 		this.linha = linha;
 		JLabel lbl = new JLabel( label );
 		lbl.setBounds( 30, linha, 100, 23 );
+		
+		return lbl;
+	}
+	
+	protected JLabel getJLabel( int linha, String label, int largura ) {
+
+		this.linha = linha;
+		JLabel lbl = new JLabel( label );
+		lbl.setBounds( 30, linha, largura, 23 );
 		
 		return lbl;
 	}

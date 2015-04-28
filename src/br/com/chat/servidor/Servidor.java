@@ -10,6 +10,7 @@ import java.net.Socket;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import br.com.chat.client.TelaChat;
 
@@ -23,7 +24,7 @@ public class Servidor extends JFrame implements ActionListener, EventosDoServido
 	private ServidorDeSockets servidor;
 	
 	public Servidor() {
-		inicializa();
+		//inicializa();
 	}
 	
 	public void inicializa() {
@@ -112,6 +113,37 @@ public class Servidor extends JFrame implements ActionListener, EventosDoServido
 
 	@Override
 	public void windowOpened(WindowEvent arg0) {}
+	
+	public void initServer(JTextField nrPorta, JButton btnControll){
+		String prt = nrPorta.getText().trim();
+		
+		try {
+			int nrPrt = Integer.parseInt( prt );
+
+			try {
+				if( servidor == null ) {
+					try {
+						servidor = new ServidorDeSockets( nrPrt, this );
+						servidor.start();
+						btnControll.setText( "Finalizar" );
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				} else {
+					servidor.finaliza();
+					btnControll.setText( "Init Server" );
+					servidor = null;
+				}
+			} catch( Exception e ) {
+				JOptionPane.showMessageDialog( this, "Erro: " + e.getMessage()  );
+			}
+		} catch( Exception e ) {
+			JOptionPane.showMessageDialog( this, "Defina o número da porta para conexão" );
+			nrPorta.requestFocusInWindow();
+			return;
+		}
+	}
 }
 
 
