@@ -32,7 +32,7 @@ public class ServidorDeSockets extends Thread {
 
 			try {
 				System.out.println( "Servidor de sockets aguardando conexões..." );
-				Socket s = getSocket();
+				final Socket s = getSocket();
 				
 				new Thread() {
 					public void run() {

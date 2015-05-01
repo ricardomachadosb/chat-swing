@@ -18,6 +18,11 @@ public class Recebedor extends Thread {
 	private JFrame jFrame;
 	private JTextField texto;
 	private JButton btEnviar;
+	private String nomeUsuario;
+	
+	public void setNomeUsuario( String nomeUsuario ){
+		this.nomeUsuario = nomeUsuario;
+	}
 	
 	public Recebedor(Socket socket, JTextArea areaChat, JFrame jFrame, JTextField texto, JButton btEnviar) {
 		this.socket = socket;
@@ -52,7 +57,7 @@ public class Recebedor extends Thread {
 					switch( rec.getInt( "nroTransacao" ) ) {
 						case 1: confirmaChat(rec.getString( "mensagem" ));
 							break;
-						case 3: new TelaChat(socket, 300, "Messinja", this); 
+						case 3: new TelaChat(socket, 300, nomeUsuario, this); 
 							break;
 						case 2: areaChat.setText( areaChat.getText() + "\n Recebido: " + rec.getString( "mensagem" ) );
 							    break;
@@ -104,7 +109,8 @@ public class Recebedor extends Thread {
 	 * 
 	 */
 	public void confirmaChatYes(){
-		TelaChat t = new TelaChat(socket, 555, "Messenget", this);
+		String nome = JOptionPane.showInputDialog("Informe seu nome");
+		TelaChat t = new TelaChat(socket, 555, nome, this);
 		t.informaConexaoAceita();
 	}
 }

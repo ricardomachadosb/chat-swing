@@ -42,7 +42,9 @@ public class ClienteChat extends BaseInterface {
 	private Recebedor getRecebedor(){
 		if(this.recebedor == null){
 			recebedor = new Recebedor(socket);
+			
 		}
+		recebedor.setNomeUsuario(nomeUsuario.getText());
 		return recebedor;
 	}
 	
@@ -71,10 +73,10 @@ public class ClienteChat extends BaseInterface {
 		
 		getContentPane().add( jLabelIcon);
 		
-		JButton btConnect = new JButton( "Conectar" );
+		final JButton btConnect = new JButton( "Conectar" );
 		btConnect.setBounds( 160, linha, 100, 23 );
 		
-		JButton btInitServer = new JButton("Init server");
+		final JButton btInitServer = new JButton("Init server");
 		btInitServer.setBounds( 30, linha, 110, 23 );
 		
 		getContentPane().add( btImg );
@@ -109,6 +111,7 @@ public class ClienteChat extends BaseInterface {
 			        ImageIcon ii=new ImageIcon(scaleImage(120, 120, ImageIO.read(new File(f.getAbsolutePath()))));//get the image from file chooser and scale it to match JLabel size
 			        jLabelIcon.setIcon(ii);
 			        btConnect.setBounds(160, linha + 140, 100, 23 );
+			        btInitServer.setBounds(30, linha + 140, 110, 23);
 			        setBounds(400, 100, 350, 350);
 			    } catch (Exception ex) {
 			        ex.printStackTrace();

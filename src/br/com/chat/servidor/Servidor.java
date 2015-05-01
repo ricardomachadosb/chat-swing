@@ -56,6 +56,7 @@ public class Servidor extends JFrame implements ActionListener, EventosDoServido
 	@Override
 	public void aoReceberSocket(Socket s) {
 		Recebedor recebedor = new Recebedor(s);
+		
 		recebedor.start();
 	}
 
