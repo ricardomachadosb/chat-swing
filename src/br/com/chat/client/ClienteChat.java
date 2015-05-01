@@ -108,7 +108,7 @@ public class ClienteChat extends BaseInterface {
 			    String filename = f.getAbsolutePath();
 			    imgPath.setText(filename);
 			    try {
-			        ImageIcon ii=new ImageIcon(scaleImage(120, 120, ImageIO.read(new File(f.getAbsolutePath()))));//get the image from file chooser and scale it to match JLabel size
+			        ImageIcon ii =new ImageIcon(scaleImage(120, 120, ImageIO.read(new File(f.getAbsolutePath()))));//get the image from file chooser and scale it to match JLabel size
 			        jLabelIcon.setIcon(ii);
 			        btConnect.setBounds(160, linha + 140, 100, 23 );
 			        btInitServer.setBounds(30, linha + 140, 110, 23);
