@@ -4,9 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
@@ -70,7 +68,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		setVisible( true );
 		addWindowListener( this );
 		
-		recebedor = new Recebedor();
+		recebedor = new Recebedor(socket, areaChat, this, texto, btEnviar);
 		recebedor.start();
 	}
 	
@@ -101,38 +99,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 			dos.writeUTF( transacao.toString() );
 			
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog( this, "N�o foi poss�vel enviar sua mensagem: " + e.getMessage() );
-		}
-	}
-	
-	private class Recebedor extends Thread {
-
-		@Override
-		public void run() {
-			
-			try {
-				InputStream is = socket.getInputStream();
-				DataInputStream dis = new DataInputStream( is );
-
-				while( isVisible() ) {
-					
-					String msg = dis.readUTF();
-					if( msg != null ) {
-						
-						JSONObject rec = new JSONObject( msg );
-
-						switch( rec.getInt( "nroTransacao" ) ) {
-							case 2: areaChat.setText( areaChat.getText() + "\n Recebido: " + rec.getString( "mensagem" ) );
-								    break;
-							case 11: areaChat.setText( areaChat.getText() + "\n ATEN��O: o usu�rio remoto desconectou" );
-									texto.setEnabled( false );
-									btEnviar.setEnabled( false );
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			JOptionPane.showMessageDialog( this, "Não foi possível enviar sua mensagem: " + e.getMessage() );
 		}
 	}
 

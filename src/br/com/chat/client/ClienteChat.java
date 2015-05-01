@@ -6,12 +6,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -21,7 +24,7 @@ import br.com.chat.servidor.Servidor;
 
 
 public class ClienteChat extends BaseInterface {
-	
+	private Socket socket;
 	/**
 	 * 
 	 */
@@ -50,6 +53,7 @@ public class ClienteChat extends BaseInterface {
 		getContentPane().add( imgPath = getJLabel("", 130 ) );
 		JButton btImg = new JButton( "Escolher Foto" );
 		btImg.setBounds( 160, linha, 150, 23 );
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE );
 		
 		saltoLinha();
 		
@@ -150,6 +154,13 @@ public class ClienteChat extends BaseInterface {
 	    g2d.drawImage(img, 0, 0, w, h, null);
 	    g2d.dispose();
 	    return bi;
+	}
+	
+	private Socket getSocket(String end, int nrPort) throws UnknownHostException, IOException{
+		if(this.socket == null){
+			this.socket = new Socket(end, nrPort);
+		}
+		return this.socket;
 	}
 	
 }
