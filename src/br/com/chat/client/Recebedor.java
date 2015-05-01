@@ -6,6 +6,7 @@ import java.net.Socket;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -25,6 +26,10 @@ public class Recebedor extends Thread {
 		this.texto = texto;
 		this.btEnviar = btEnviar;
 	}
+	
+	public Recebedor(Socket socket) {
+		this.socket = socket;
+	}
 
 	@Override
 	public void run() {
@@ -33,7 +38,7 @@ public class Recebedor extends Thread {
 			InputStream is = socket.getInputStream();
 			DataInputStream dis = new DataInputStream( is );
 
-			while( jFrame.isVisible() ) {
+			while( jFrame == null || jFrame.isVisible() ) {
 				
 				String msg = dis.readUTF();
 				if( msg != null ) {
@@ -41,6 +46,9 @@ public class Recebedor extends Thread {
 					JSONObject rec = new JSONObject( msg );
 
 					switch( rec.getInt( "nroTransacao" ) ) {
+						case 1: confirmaChat(rec.getString( "mensagem" ));
+						case 3: new TelaChat(socket, 300, "Messinja"); 
+							break;
 						case 2: areaChat.setText( areaChat.getText() + "\n Recebido: " + rec.getString( "mensagem" ) );
 							    break;
 						case 11: areaChat.setText( areaChat.getText() + "\n ATENÇÂO: o usuário remoto desconectou" );
@@ -52,5 +60,17 @@ public class Recebedor extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * @param nomeUsuario
+	 * @return
+	 */
+	public int confirmaChat(String nomeUsuario){
+		int resp = JOptionPane.showConfirmDialog(null, "Usuário: " + nomeUsuario, "Confirmação", JOptionPane.YES_NO_OPTION);
+		switch(resp){
+			case 0: new TelaChat(socket, 555, "Messenget"); 
+		}
+		return 0;
 	}
 }

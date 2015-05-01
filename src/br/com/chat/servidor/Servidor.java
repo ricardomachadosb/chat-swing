@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import br.com.chat.client.Recebedor;
 import br.com.chat.client.TelaChat;
 
 public class Servidor extends JFrame implements ActionListener, EventosDoServidorDeSockets, WindowListener {
@@ -22,26 +23,6 @@ public class Servidor extends JFrame implements ActionListener, EventosDoServido
 	private static final long serialVersionUID = 1L;
 	private JButton botao;
 	private ServidorDeSockets servidor;
-	
-	public Servidor() {
-		//inicializa();
-	}
-	
-	public void inicializa() {
-		
-		setBounds( 80, 90, 200, 120 );
-		setLayout( null );
-		
-		botao = new JButton( "Iniciar" );
-		botao.setBounds( 30, 30, 130, 30 );
-		getContentPane().add( botao );
-		botao.addActionListener( this );
-		
-		addWindowListener( this );
-		
-		setDefaultCloseOperation( DISPOSE_ON_CLOSE );
-		setVisible( true );
-	}
 	
 	public static void main(String[] args) {
 		new Servidor();
@@ -74,13 +55,8 @@ public class Servidor extends JFrame implements ActionListener, EventosDoServido
 
 	@Override
 	public void aoReceberSocket(Socket s) {
-		
-		comunicaComEsteSocket( s );
-	}
-
-	private void comunicaComEsteSocket(Socket s) {
-		
-		new TelaChat( s, 5, "Servidor" );
+		Recebedor recebedor = new Recebedor(s);
+		recebedor.start();
 	}
 
 	@Override

@@ -10,7 +10,7 @@ public class ServidorDeSockets extends Thread {
 	private boolean continua;
 	private EventosDoServidorDeSockets eventos;
 	
-	public ServidorDeSockets( int nroPorta, EventosDoServidorDeSockets eventos ) throws IOException {
+	public ServidorDeSockets( int nroPorta, EventosDoServidorDeSockets eventos) throws IOException {
 		serverSoket = new ServerSocket( nroPorta );
 		this.eventos = eventos;
 	}

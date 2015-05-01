@@ -5,10 +5,10 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -18,6 +18,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import org.json.JSONObject;
 
 import br.com.chat.interfaces.BaseInterface;
 import br.com.chat.servidor.Servidor;
@@ -124,8 +126,8 @@ public class ClienteChat extends BaseInterface {
 			int nrPrt = Integer.parseInt( prt );
 
 			try {
-				Socket s = new Socket( end, nrPrt );
-				comunicaComEsteSocket( s );
+				this.socket = new Socket( end, nrPrt );
+				comunicaComEsteSocket( this.socket );
 			} catch( Exception e ) {
 				JOptionPane.showMessageDialog( this, "Erro: " + e.getMessage()  );
 			}
@@ -137,10 +139,11 @@ public class ClienteChat extends BaseInterface {
 	}
 	
 	private void comunicaComEsteSocket(Socket s) {
-		
-		new TelaChat( s, 510, "Cliente" );
+		solicitaAutorizacao();
+		//new TelaIdentificacao(s, 510, "Idetificação");
+		//new TelaChat( s, 510, "Cliente" );
 	}
-
+	
 	public static void main(String[] args) {
 		new ClienteChat();
 	}
@@ -156,11 +159,22 @@ public class ClienteChat extends BaseInterface {
 	    return bi;
 	}
 	
-	private Socket getSocket(String end, int nrPort) throws UnknownHostException, IOException{
-		if(this.socket == null){
-			this.socket = new Socket(end, nrPort);
+	/**
+	 * 
+	 */
+	private void solicitaAutorizacao() {
+		try {
+			OutputStream os = socket.getOutputStream();
+			DataOutputStream dos = new DataOutputStream( os );
+
+			JSONObject transacao = new JSONObject();
+			transacao.put( "nroTransacao", 1 );
+			transacao.put( "mensagem", nomeUsuario.getText());
+			
+			dos.writeUTF( transacao.toString() );
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog( this, "Não foi possível enviar sua mensagem: " + e.getMessage() );
 		}
-		return this.socket;
 	}
-	
 }
