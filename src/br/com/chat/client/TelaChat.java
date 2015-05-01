@@ -73,6 +73,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		recebedor.setjFrame(this);
 		recebedor.setTexto(texto);
 		
+		
 //		recebedor = new Recebedor(socket, areaChat, this, texto, btEnviar);
 //		recebedor.start();
 	}
