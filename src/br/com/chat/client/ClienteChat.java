@@ -140,7 +140,6 @@ public class ClienteChat extends BaseInterface {
 	
 	private void comunicaComEsteSocket(Socket s) {
 		solicitaAutorizacao();
-		//new TelaIdentificacao(s, 510, "Idetificação");
 		//new TelaChat( s, 510, "Cliente" );
 	}
 	

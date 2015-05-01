@@ -47,6 +47,7 @@ public class Recebedor extends Thread {
 
 					switch( rec.getInt( "nroTransacao" ) ) {
 						case 1: confirmaChat(rec.getString( "mensagem" ));
+							break;
 						case 3: new TelaChat(socket, 300, "Messinja"); 
 							break;
 						case 2: areaChat.setText( areaChat.getText() + "\n Recebido: " + rec.getString( "mensagem" ) );
@@ -66,11 +67,16 @@ public class Recebedor extends Thread {
 	 * @param nomeUsuario
 	 * @return
 	 */
-	public int confirmaChat(String nomeUsuario){
+	public void confirmaChat(String nomeUsuario){
 		int resp = JOptionPane.showConfirmDialog(null, "Usuário: " + nomeUsuario, "Confirmação", JOptionPane.YES_NO_OPTION);
 		switch(resp){
-			case 0: new TelaChat(socket, 555, "Messenget"); 
+			case 0: confirmaChatYes();
+			//TODO tratar o case nada
 		}
-		return 0;
+	}
+	
+	public void confirmaChatYes(){
+		TelaChat t = new TelaChat(socket, 555, "Messenget");
+		
 	}
 }

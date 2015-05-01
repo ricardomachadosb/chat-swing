@@ -86,8 +86,10 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		}
 	}
 	
+	/**
+	 * @param txt
+	 */
 	private void enviaPeloSocket( String txt ) {
-		
 		try {
 			OutputStream os = socket.getOutputStream();
 			DataOutputStream dos = new DataOutputStream( os );
@@ -95,6 +97,21 @@ public class TelaChat extends BaseInterface implements WindowListener {
 			JSONObject transacao = new JSONObject();
 			transacao.put( "nroTransacao", 2 );
 			transacao.put( "mensagem", txt );
+			
+			dos.writeUTF( transacao.toString() );
+			
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog( this, "Não foi possível enviar sua mensagem: " + e.getMessage() );
+		}
+	}
+	
+	public void informaConexaoAceita(){
+		try {
+			OutputStream os = socket.getOutputStream();
+			DataOutputStream dos = new DataOutputStream( os );
+
+			JSONObject transacao = new JSONObject();
+			transacao.put( "nroTransacao", 3);
 			
 			dos.writeUTF( transacao.toString() );
 			
