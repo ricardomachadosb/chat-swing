@@ -37,7 +37,11 @@ public class Recebedor extends Thread {
 		try {
 			InputStream is = socket.getInputStream();
 			DataInputStream dis = new DataInputStream( is );
-
+			if(jFrame == null){
+				System.out.println("ta nulo j frae");
+			}else {
+				System.out.println(jFrame.isVisible());
+			}
 			while( jFrame == null || jFrame.isVisible() ) {
 				
 				String msg = dis.readUTF();
@@ -48,7 +52,7 @@ public class Recebedor extends Thread {
 					switch( rec.getInt( "nroTransacao" ) ) {
 						case 1: confirmaChat(rec.getString( "mensagem" ));
 							break;
-						case 3: new TelaChat(socket, 300, "Messinja"); 
+						case 3: new TelaChat(socket, 300, "Messinja", this); 
 							break;
 						case 2: areaChat.setText( areaChat.getText() + "\n Recebido: " + rec.getString( "mensagem" ) );
 							    break;
@@ -63,6 +67,26 @@ public class Recebedor extends Thread {
 		}
 	}
 	
+	public void setSocket(Socket socket) {
+		this.socket = socket;
+	}
+
+	public void setAreaChat(JTextArea areaChat) {
+		this.areaChat = areaChat;
+	}
+
+	public void setjFrame(JFrame jFrame) {
+		this.jFrame = jFrame;
+	}
+
+	public void setTexto(JTextField texto) {
+		this.texto = texto;
+	}
+
+	public void setBtEnviar(JButton btEnviar) {
+		this.btEnviar = btEnviar;
+	}
+
 	/**
 	 * @param nomeUsuario
 	 * @return
@@ -71,12 +95,16 @@ public class Recebedor extends Thread {
 		int resp = JOptionPane.showConfirmDialog(null, "Usuário: " + nomeUsuario, "Confirmação", JOptionPane.YES_NO_OPTION);
 		switch(resp){
 			case 0: confirmaChatYes();
+				break;
 			//TODO tratar o case nada
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public void confirmaChatYes(){
-		TelaChat t = new TelaChat(socket, 555, "Messenget");
-		
+		TelaChat t = new TelaChat(socket, 555, "Messenget", this);
+		t.informaConexaoAceita();
 	}
 }

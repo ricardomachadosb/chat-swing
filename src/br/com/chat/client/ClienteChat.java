@@ -37,6 +37,14 @@ public class ClienteChat extends BaseInterface {
 	private JLabel jLabelIcon = new JLabel();
 	private JLabel imgPath;
 	private Servidor servidor = new Servidor();
+	private Recebedor recebedor;
+	
+	private Recebedor getRecebedor(){
+		if(this.recebedor == null){
+			recebedor = new Recebedor(socket);
+		}
+		return recebedor;
+	}
 	
 	public ClienteChat() {
 		
@@ -127,7 +135,7 @@ public class ClienteChat extends BaseInterface {
 
 			try {
 				this.socket = new Socket( end, nrPrt );
-				comunicaComEsteSocket( this.socket );
+				comunicaComEsteSocket();
 			} catch( Exception e ) {
 				JOptionPane.showMessageDialog( this, "Erro: " + e.getMessage()  );
 			}
@@ -138,9 +146,13 @@ public class ClienteChat extends BaseInterface {
 		}
 	}
 	
-	private void comunicaComEsteSocket(Socket s) {
+	/**
+	 * 
+	 */
+	private void comunicaComEsteSocket(){
+		Recebedor recebedor = getRecebedor();
+		recebedor.start();
 		solicitaAutorizacao();
-		//new TelaChat( s, 510, "Cliente" );
 	}
 	
 	public static void main(String[] args) {

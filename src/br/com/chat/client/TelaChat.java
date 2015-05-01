@@ -32,7 +32,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 	private JTextField texto;
 	private JButton btEnviar;
 	
-	public TelaChat( Socket socket, int coluna, String titulo ) {
+	public TelaChat( Socket socket, int coluna, String titulo, Recebedor recebedor) {
 		
 		this.socket = socket;
 		
@@ -68,8 +68,13 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		setVisible( true );
 		addWindowListener( this );
 		
-		recebedor = new Recebedor(socket, areaChat, this, texto, btEnviar);
-		recebedor.start();
+		recebedor.setAreaChat(this.areaChat);
+		recebedor.setBtEnviar(btEnviar);
+		recebedor.setjFrame(this);
+		recebedor.setTexto(texto);
+		
+//		recebedor = new Recebedor(socket, areaChat, this, texto, btEnviar);
+//		recebedor.start();
 	}
 	
 	private void enviaTexto() {
