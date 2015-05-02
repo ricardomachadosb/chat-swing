@@ -40,10 +40,7 @@ public class ClienteChat extends BaseInterface {
 	private Recebedor recebedor;
 	
 	private Recebedor getRecebedor(){
-		if(this.recebedor == null){
-			recebedor = new Recebedor(socket);
-			
-		}
+		recebedor = new Recebedor(socket);
 		recebedor.setNomeUsuario(nomeUsuario.getText());
 		return recebedor;
 	}
