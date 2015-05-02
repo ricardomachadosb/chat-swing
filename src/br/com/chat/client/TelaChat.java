@@ -73,6 +73,8 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		recebedor.setjFrame(this);
 		recebedor.setTexto(texto);
 		
+		this.recebedor = recebedor;
+		
 		
 //		recebedor = new Recebedor(socket, areaChat, this, texto, btEnviar);
 //		recebedor.start();
@@ -84,7 +86,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		
 		if( txt.length() > 0 ) {
 			
-			areaChat.setText( areaChat.getText() + "\n Enviando: " + txt );
+			areaChat.setText( areaChat.getText() + "\n" + recebedor.getNomeUsuario() + " : " + txt );
 			texto.setText( "" );
 			texto.requestFocusInWindow();
 			
@@ -111,13 +113,14 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		}
 	}
 	
-	public void informaConexaoAceita(){
+	public void informaConexaoAceita(String nome){
 		try {
 			OutputStream os = socket.getOutputStream();
 			DataOutputStream dos = new DataOutputStream( os );
 
 			JSONObject transacao = new JSONObject();
 			transacao.put( "nroTransacao", 3);
+			transacao.put( "mensagem", nome );
 			
 			dos.writeUTF( transacao.toString() );
 			

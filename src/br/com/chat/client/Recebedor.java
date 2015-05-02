@@ -19,9 +19,14 @@ public class Recebedor extends Thread {
 	private JTextField texto;
 	private JButton btEnviar;
 	private String nomeUsuario;
+	private String nomeContato;
 	
 	public void setNomeUsuario( String nomeUsuario ){
 		this.nomeUsuario = nomeUsuario;
+	}
+	
+	public String getNomeUsuario(){
+		return this.nomeUsuario;
 	}
 	
 	public Recebedor(Socket socket, JTextArea areaChat, JFrame jFrame, JTextField texto, JButton btEnviar) {
@@ -57,9 +62,11 @@ public class Recebedor extends Thread {
 					switch( rec.getInt( "nroTransacao" ) ) {
 						case 1: confirmaChat(rec.getString( "mensagem" ));
 							break;
-						case 3: new TelaChat(socket, 300, nomeUsuario, this); 
+						case 3:
+							this.nomeContato = rec.getString( "mensagem" );
+							new TelaChat(socket, 300, nomeUsuario, this); 
 							break;
-						case 2: areaChat.setText( areaChat.getText() + "\n Recebido: " + rec.getString( "mensagem" ) );
+						case 2: areaChat.setText( areaChat.getText() + "\n" + nomeContato + ":" + rec.getString( "mensagem" ) );
 							    break;
 						case 11: areaChat.setText( areaChat.getText() + "\n ATENÇÂO: o usuário remoto desconectou" );
 								texto.setEnabled( false );
@@ -99,7 +106,7 @@ public class Recebedor extends Thread {
 	public void confirmaChat(String nomeUsuario){
 		int resp = JOptionPane.showConfirmDialog(null, "Usuário: " + nomeUsuario, "Confirmação", JOptionPane.YES_NO_OPTION);
 		switch(resp){
-			case 0: confirmaChatYes();
+			case 0: confirmaChatYes(nomeUsuario);
 				break;
 			//TODO tratar o case nada
 		}
@@ -108,9 +115,11 @@ public class Recebedor extends Thread {
 	/**
 	 * 
 	 */
-	public void confirmaChatYes(){
+	public void confirmaChatYes(String nomeUsuario){
 		String nome = JOptionPane.showInputDialog("Informe seu nome");
 		TelaChat t = new TelaChat(socket, 555, nome, this);
-		t.informaConexaoAceita();
+		nomeContato = nomeUsuario;
+		this.nomeUsuario = nome;
+		t.informaConexaoAceita(nome);
 	}
 }
