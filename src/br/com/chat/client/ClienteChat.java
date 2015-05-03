@@ -181,7 +181,8 @@ public class ClienteChat extends BaseInterface {
 			JSONObject transacao = new JSONObject();
 			transacao.put( "nroTransacao", 1 );
 			transacao.put( "mensagem", nomeUsuario.getText());
-			
+			transacao.put( "imagem", jLabelIcon.getIcon() );
+			//JOptionPane.showConfirmDialog( null, "Imagem", "Imagem", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, jLabelIcon.getIcon());
 			dos.writeUTF( transacao.toString() );
 			
 		} catch (Exception e) {

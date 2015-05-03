@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.net.Socket;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -47,11 +48,7 @@ public class Recebedor extends Thread {
 		try {
 			InputStream is = socket.getInputStream();
 			DataInputStream dis = new DataInputStream( is );
-			if(jFrame == null){
-				System.out.println("ta nulo j frae");
-			}else {
-				System.out.println(jFrame.isVisible());
-			}
+
 			while( jFrame == null || jFrame.isVisible() ) {
 				
 				String msg = dis.readUTF();
@@ -60,13 +57,15 @@ public class Recebedor extends Thread {
 					JSONObject rec = new JSONObject( msg );
 
 					switch( rec.getInt( "nroTransacao" ) ) {
-						case 1: confirmaChat(rec.getString( "mensagem" ));
+						case 1: System.out.println( rec.get( "imagem" ) );
+						JOptionPane.showConfirmDialog( null, "Imagem", "Imagem", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, (Icon) rec.get( "imagem" ));
+							confirmaChat(rec.getString( "mensagem" ));
 							break;
 						case 3:
 							this.nomeContato = rec.getString( "mensagem" );
 							new TelaChat(socket, 300, nomeUsuario, this); 
 							break;
-						case 2: areaChat.setText( areaChat.getText() + "\n" + nomeContato + ":" + rec.getString( "mensagem" ) );
+						case 2: areaChat.setText( areaChat.getText() + nomeContato + " diz:" + rec.getString( "mensagem" ) + "\n" );
 							    break;
 						case 11: areaChat.setText( areaChat.getText() + "\n ATENÇÂO: o usuário remoto desconectou" );
 								texto.setEnabled( false );
