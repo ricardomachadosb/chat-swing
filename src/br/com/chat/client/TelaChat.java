@@ -43,6 +43,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		areaChat = new JTextArea();
 		JScrollPane sp = new JScrollPane( areaChat );
 		sp.setBounds( 5, 10, 470, 300 );
+		areaChat.setEditable( false );
 		
 		getContentPane().add( sp );
 		
@@ -86,7 +87,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		
 		if( txt.length() > 0 ) {
 			
-			areaChat.setText( areaChat.getText() + "\n" + recebedor.getNomeUsuario() + " : " + txt );
+			areaChat.setText( areaChat.getText() + recebedor.getNomeUsuario() + " diz: " + txt + "\n" );
 			texto.setText( "" );
 			texto.requestFocusInWindow();
 			
