@@ -60,7 +60,7 @@ public class ClienteChat extends BaseInterface {
 		getContentPane().add( imgPath = getJLabel("", 130 ) );
 		JButton btImg = new JButton( "Escolher Foto" );
 		btImg.setBounds( 160, linha, 150, 23 );
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE );
+		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		
 		saltoLinha();
 		
@@ -168,8 +168,11 @@ public class ClienteChat extends BaseInterface {
 			JSONObject transacao = new JSONObject();
 			transacao.put( "nroTransacao", 1 );
 			transacao.put( "mensagem", nomeUsuario.getText());
-			transacao.put( "imagem", ImageUtil.iconToByte(jLabelIcon.getIcon()));
-			//JOptionPane.showConfirmDialog( null, "Imagem", "Imagem", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, jLabelIcon.getIcon());
+			
+			if( jLabelIcon.getIcon() != null ){
+				transacao.put( "imagem", ImageUtil.iconToByte(jLabelIcon.getIcon()));
+			}
+
 			dos.writeUTF( transacao.toString() );
 			
 		} catch (Exception e) {
