@@ -1,16 +1,20 @@
 package br.com.chat.client;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -19,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import br.com.chat.interfaces.BaseInterface;
@@ -181,12 +186,29 @@ public class ClienteChat extends BaseInterface {
 			JSONObject transacao = new JSONObject();
 			transacao.put( "nroTransacao", 1 );
 			transacao.put( "mensagem", nomeUsuario.getText());
-			transacao.put( "imagem", jLabelIcon.getIcon() );
+			transacao.put( "imagem", iconToByte(jLabelIcon.getIcon()));
 			//JOptionPane.showConfirmDialog( null, "Imagem", "Imagem", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, jLabelIcon.getIcon());
 			dos.writeUTF( transacao.toString() );
 			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog( this, "Não foi possível enviar sua mensagem: " + e.getMessage() );
 		}
+	}
+	
+	/**
+	 * @param icon
+	 * @return
+	 * @throws IOException 
+	 * @throws JSONException 
+	 */
+	static byte[] iconToByte(Icon icon) throws IOException, JSONException {
+		ImageIcon imgIcon = (ImageIcon)icon;
+		BufferedImage image = (BufferedImage)((Image) imgIcon.getImage());
+		//BufferedImage image = ImageIO.read(new File("icon.png")); 
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
+		ImageIO.write(image, "jpg", baos);
+		byte[] u = baos.toByteArray();
+		return u;
+		
 	}
 }

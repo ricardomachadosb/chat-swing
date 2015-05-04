@@ -13,7 +13,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import br.com.chat.client.Recebedor;
-import br.com.chat.client.TelaChat;
 
 public class Servidor extends JFrame implements ActionListener, EventosDoServidorDeSockets, WindowListener {
 
