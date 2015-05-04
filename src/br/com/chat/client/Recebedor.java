@@ -1,12 +1,9 @@
 package br.com.chat.client;
 
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.net.Socket;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -14,8 +11,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import br.com.chat.util.ImageUtil;
 
 public class Recebedor extends Thread {
 	private Socket socket;
@@ -63,8 +61,7 @@ public class Recebedor extends Thread {
 					switch( rec.getInt( "nroTransacao" ) ) {
 						case 1: System.out.println( rec.get( "imagem" ) );
 						JOptionPane.showConfirmDialog( null, "Imagem", "Imagem", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-								new ImageIcon(ImageIO.read(new ByteArrayInputStream(objectToBytArray(rec.get( "imagem"))))));
-								//new ImageIcon((byte[])rec.get( "imagem" )));
+								ImageUtil.getImageIcon((JSONArray)rec.get( "imagem" )));
 							confirmaChat(rec.getString( "mensagem" ));
 							break;
 						case 3:
@@ -126,14 +123,5 @@ public class Recebedor extends Thread {
 		nomeContato = nomeUsuario;
 		this.nomeUsuario = nome;
 		t.informaConexaoAceita(nome);
-	}
-	
-	public byte[] objectToBytArray( Object ob ) throws JSONException{
-		JSONArray j = (JSONArray) ob;
-		byte[] novoB = new byte[j.length()];
-		for(int i = 0; i < j.length(); i++){
-			novoB[i] = ((Integer)j.get(i)).byteValue();
-		}
-		return novoB;
 	}
 }
