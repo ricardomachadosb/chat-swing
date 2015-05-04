@@ -30,7 +30,6 @@ public class ImageUtil {
 	public static byte[] iconToByte(Icon icon) throws IOException, JSONException {
 		ImageIcon imgIcon = (ImageIcon)icon;
 		BufferedImage image = (BufferedImage)((Image) imgIcon.getImage());
-		//BufferedImage image = ImageIO.read(new File("icon.png")); 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
 		ImageIO.write(image, "jpg", baos);
 		byte[] u = baos.toByteArray();
