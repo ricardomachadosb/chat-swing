@@ -1,9 +1,12 @@
 package br.com.chat.client;
 
+import java.awt.HeadlessException;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -11,6 +14,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import br.com.chat.util.ImageUtil;
@@ -59,10 +63,11 @@ public class Recebedor extends Thread {
 					JSONObject rec = new JSONObject( msg );
 
 					switch( rec.getInt( "nroTransacao" ) ) {
-						case 1: System.out.println( rec.get( "imagem" ) );
-						JOptionPane.showConfirmDialog( null, "Imagem", "Imagem", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-								ImageUtil.getImageIcon((JSONArray)rec.get( "imagem" )));
-							confirmaChat(rec.getString( "mensagem" ));
+						case 1: if( rec.has( "imagem" ) ){
+									confirmaChat(rec.getString( "mensagem" ), rec.get( "imagem" ) );
+								}else{
+									confirmaChat(rec.getString( "mensagem" ));
+								}
 							break;
 						case 3:
 							this.nomeContato = rec.getString( "mensagem" );
@@ -106,7 +111,16 @@ public class Recebedor extends Thread {
 	 * @return
 	 */
 	public void confirmaChat(String nomeUsuario){
-		int resp = JOptionPane.showConfirmDialog(null, "Usuário: " + nomeUsuario, "Confirmação", JOptionPane.YES_NO_OPTION);
+		int resp = JOptionPane.showConfirmDialog(null, "O usuário " + nomeUsuario + ",\ndeseja iniciar uma conversa com você.\nVocê aceita?", "Confirmação", JOptionPane.YES_NO_OPTION);
+		switch(resp){
+			case 0: confirmaChatYes(nomeUsuario);
+				break;
+			//TODO tratar o case nada
+		}
+	}
+	
+	public void confirmaChat(String nomeUsuario, Object imagem ) throws HeadlessException, IOException, JSONException{
+		int resp = JOptionPane.showConfirmDialog(null, "O usuário " + nomeUsuario + ",\ndeseja iniciar uma conversa com você.\nVocê aceita?", "Confirmação", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, ImageUtil.getImageIcon((JSONArray) imagem));
 		switch(resp){
 			case 0: confirmaChatYes(nomeUsuario);
 				break;
