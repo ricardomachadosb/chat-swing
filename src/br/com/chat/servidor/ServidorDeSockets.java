@@ -23,15 +23,13 @@ public class ServidorDeSockets extends Thread {
 	
 	@Override
 	public void run() {
-		
-		System.out.println( "Iniciando serviço de sockets" );
+
 		eventos.aoIniciarServidor();
 		
 		continua = true;
 		while( continua ) {
 
 			try {
-				System.out.println( "Servidor de sockets aguardando conexões..." );
 				final Socket s = getSocket();
 				
 				new Thread() {
@@ -47,7 +45,6 @@ public class ServidorDeSockets extends Thread {
 			}
 		}
 
-		System.out.println( "Finalizando serviço de sockets" );
 		eventos.aoFinalizarServidor();
 	}
 	

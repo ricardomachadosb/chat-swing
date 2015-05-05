@@ -8,7 +8,9 @@ import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -16,7 +18,8 @@ import javax.swing.JTextField;
 
 import org.json.JSONObject;
 
-import br.com.chat.interfaces.BaseInterface;
+import br.com.chat.util.BaseInterface;
+import br.com.chat.util.ImageUtil;
 
 
 public class TelaChat extends BaseInterface implements WindowListener {
@@ -32,13 +35,23 @@ public class TelaChat extends BaseInterface implements WindowListener {
 	private JTextField texto;
 	private JButton btEnviar;
 	
-	public TelaChat( Socket socket, int coluna, String titulo, Recebedor recebedor) {
+	public TelaChat( Socket socket, int coluna, String titulo, Recebedor recebedor, ImageIcon imagemPessoal, ImageIcon imagemRemota ) {
 		
 		this.socket = socket;
 		
 		setTitle( titulo );
-		setBounds( coluna, 200, 500, 400 );
+		setBounds( coluna, 200, 650, 400 );
 		setLayout( null );
+		
+		JLabel jLabelIcon = new JLabel();
+		jLabelIcon.setBounds( 500, 30, 120, 120);
+		jLabelIcon.setIcon( imagemPessoal );
+		getContentPane().add( jLabelIcon );
+		
+		JLabel jLabelIconRemoto = new JLabel();
+		jLabelIconRemoto.setBounds( 500, 180, 120, 120);
+		jLabelIconRemoto.setIcon( imagemRemota );
+		getContentPane().add( jLabelIconRemoto );
 		
 		areaChat = new JTextArea();
 		JScrollPane sp = new JScrollPane( areaChat );
@@ -75,10 +88,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		recebedor.setTexto(texto);
 		
 		this.recebedor = recebedor;
-		
-		
-//		recebedor = new Recebedor(socket, areaChat, this, texto, btEnviar);
-//		recebedor.start();
+
 	}
 	
 	private void enviaTexto() {
@@ -114,7 +124,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		}
 	}
 	
-	public void informaConexaoAceita(String nome){
+	public void informaConexaoAceita(String nome, ImageIcon imagemServidor, ImageIcon ImagemCliente){
 		try {
 			OutputStream os = socket.getOutputStream();
 			DataOutputStream dos = new DataOutputStream( os );
@@ -122,6 +132,8 @@ public class TelaChat extends BaseInterface implements WindowListener {
 			JSONObject transacao = new JSONObject();
 			transacao.put( "nroTransacao", 3);
 			transacao.put( "mensagem", nome );
+				if( imagemServidor != null ) transacao.put( "imagemServidor", ImageUtil.iconToByte( imagemServidor ) );
+				if( ImagemCliente != null) transacao.put( "imagemCliente", ImageUtil.iconToByte( ImagemCliente ) );
 			
 			dos.writeUTF( transacao.toString() );
 			
@@ -164,16 +176,3 @@ public class TelaChat extends BaseInterface implements WindowListener {
 	@Override
 	public void windowOpened(WindowEvent arg0) {}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

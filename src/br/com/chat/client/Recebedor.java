@@ -1,10 +1,9 @@
 package br.com.chat.client;
 
-import java.awt.HeadlessException;
 import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -14,7 +13,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import br.com.chat.util.ImageUtil;
@@ -27,27 +25,11 @@ public class Recebedor extends Thread {
 	private JButton btEnviar;
 	private String nomeUsuario;
 	private String nomeContato;
+	private ImageIcon servidor;
+	private ImageIcon cliente;
+	private ImageIcon imagemCliente;
+	private ImageIcon imagemServidor;
 	
-	public void setNomeUsuario( String nomeUsuario ){
-		this.nomeUsuario = nomeUsuario;
-	}
-	
-	public String getNomeUsuario(){
-		return this.nomeUsuario;
-	}
-	
-	public Recebedor(Socket socket, JTextArea areaChat, JFrame jFrame, JTextField texto, JButton btEnviar) {
-		this.socket = socket;
-		this.areaChat = areaChat;
-		this.jFrame = jFrame;
-		this.texto = texto;
-		this.btEnviar = btEnviar;
-	}
-	
-	public Recebedor(Socket socket) {
-		this.socket = socket;
-	}
-
 	@Override
 	public void run() {
 		
@@ -64,14 +46,21 @@ public class Recebedor extends Thread {
 
 					switch( rec.getInt( "nroTransacao" ) ) {
 						case 1: if( rec.has( "imagem" ) ){
-									confirmaChat(rec.getString( "mensagem" ), rec.get( "imagem" ) );
+									setCliente( ImageUtil.getImageIcon((JSONArray) rec.get( "imagem" )));
+									confirmaChat(rec.getString( "mensagem" ) );
 								}else{
 									confirmaChat(rec.getString( "mensagem" ));
 								}
 							break;
 						case 3:
 							this.nomeContato = rec.getString( "mensagem" );
-							new TelaChat(socket, 300, nomeUsuario, this); 
+							if( rec.has("imagemServidor")){
+								setImagemServidor(ImageUtil.getImageIcon((JSONArray) rec.get( "imagemServidor" )));
+							}
+							if( rec.has( "imagemCliente" ) ){
+								setImagemCliente(ImageUtil.getImageIcon((JSONArray) rec.get( "imagemCliente" )));
+							}
+							new TelaChat(socket, 300, nomeUsuario, this,  this.imagemServidor,  this.imagemCliente); 
 							break;
 						case 2: areaChat.setText( areaChat.getText() + nomeContato + " diz:" + rec.getString( "mensagem" ) + "\n" );
 							    break;
@@ -84,6 +73,31 @@ public class Recebedor extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @param nomeUsuario
+	 * @return
+	 */
+	public void confirmaChat(String nomeUsuario){
+		int resp = JOptionPane.showConfirmDialog(null, "O usuário " + nomeUsuario + ",\ndeseja iniciar uma conversa com você.\nVocê aceita?", "Confirmação", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, this.cliente);
+		switch(resp){
+			case 0: confirmaChatYes(nomeUsuario);
+				break;
+			//TODO tratar o case nada
+		}
+	}
+	/**
+	 * 
+	 */
+	public void confirmaChatYes(String nomeUsuario){
+		HashMap<String, Object> coisas = ImageUtil.getJframe();
+		setServidor( (ImageIcon) coisas.get( "imagem" ) );
+		String nome = (String) coisas.get("nome");
+		TelaChat t = new TelaChat(socket, 555, nome, this, this.cliente, this.servidor);
+		nomeContato = nomeUsuario;
+		this.nomeUsuario = nome;
+		t.informaConexaoAceita(nome, servidor, cliente);
 	}
 	
 	public void setSocket(Socket socket) {
@@ -105,37 +119,32 @@ public class Recebedor extends Thread {
 	public void setBtEnviar(JButton btEnviar) {
 		this.btEnviar = btEnviar;
 	}
+	
+	public void setImagemCliente(ImageIcon imagemCliente) {
+		this.imagemCliente = imagemCliente;
+	}
 
-	/**
-	 * @param nomeUsuario
-	 * @return
-	 */
-	public void confirmaChat(String nomeUsuario){
-		int resp = JOptionPane.showConfirmDialog(null, "O usuário " + nomeUsuario + ",\ndeseja iniciar uma conversa com você.\nVocê aceita?", "Confirmação", JOptionPane.YES_NO_OPTION);
-		switch(resp){
-			case 0: confirmaChatYes(nomeUsuario);
-				break;
-			//TODO tratar o case nada
-		}
+	public void setImagemServidor(ImageIcon imagemServidor) {
+		this.imagemServidor = imagemServidor;
+	}
+
+	public void setServidor(ImageIcon servidor) {
+		this.servidor = servidor;
+	}
+
+	public void setCliente(ImageIcon cliente) {
+		this.cliente = cliente;
+	}
+
+	public void setNomeUsuario( String nomeUsuario ){
+		this.nomeUsuario = nomeUsuario;
 	}
 	
-	public void confirmaChat(String nomeUsuario, Object imagem ) throws HeadlessException, IOException, JSONException{
-		int resp = JOptionPane.showConfirmDialog(null, "O usuário " + nomeUsuario + ",\ndeseja iniciar uma conversa com você.\nVocê aceita?", "Confirmação", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, ImageUtil.getImageIcon((JSONArray) imagem));
-		switch(resp){
-			case 0: confirmaChatYes(nomeUsuario);
-				break;
-			//TODO tratar o case nada
-		}
+	public String getNomeUsuario(){
+		return this.nomeUsuario;
 	}
-	
-	/**
-	 * 
-	 */
-	public void confirmaChatYes(String nomeUsuario){
-		String nome = JOptionPane.showInputDialog("Informe seu nome");
-		TelaChat t = new TelaChat(socket, 555, nome, this);
-		nomeContato = nomeUsuario;
-		this.nomeUsuario = nome;
-		t.informaConexaoAceita(nome);
+
+	public Recebedor(Socket socket) {
+		this.socket = socket;
 	}
 }

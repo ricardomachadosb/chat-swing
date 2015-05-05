@@ -3,14 +3,22 @@ package br.com.chat.util;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +28,7 @@ import org.json.JSONException;
  *
  */
 public class ImageUtil {
-	
+	public static int foi = 0;
 	/**
 	 * @param icon
 	 * @return
@@ -31,7 +39,7 @@ public class ImageUtil {
 		ImageIcon imgIcon = (ImageIcon)icon;
 		BufferedImage image = (BufferedImage)((Image) imgIcon.getImage());
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
-		ImageIO.write(image, "jpg", baos);
+		ImageIO.write(image, "png", baos);
 		byte[] u = baos.toByteArray();
 		return u;
 		
@@ -77,5 +85,63 @@ public class ImageUtil {
 	 */
 	public static ImageIcon getImageIcon(JSONArray j) throws IOException, JSONException{
 		return new ImageIcon(ImageIO.read(new ByteArrayInputStream(objectToBytArray(j))));
+	}
+	
+	public static HashMap<String, Object> getJframe(){
+		JTextField nomeUsuario;
+		final JButton btOK;
+		JButton btImg;
+		final JLabel jLabelIcon = new JLabel();
+		final JLabel imgPath;
+		foi = 0;
+
+		final BaseInterface bi = new BaseInterface("Informe seu nome");
+		
+		bi.add( bi.getJLabel("Nome de usuário", 130 ) );
+		bi.add( nomeUsuario = bi.getJTextField( 150 ) );
+		bi.add( btOK = bi.getJbutton( "OK", 115, 160, 60, 23 ) );
+		bi.add( btImg = bi.getJbutton( "Escolhe imagem", 110, 100, 150, 23 ) );
+		bi.add( imgPath = bi.getJLabel("", 150 ));
+		jLabelIcon.setBounds(120, 120, 120, 120);
+		bi.add( jLabelIcon );
+		bi.setVisible( true );
+		
+		btImg.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+			    chooser.showOpenDialog(null);
+			    File f = chooser.getSelectedFile();
+			    String filename = f.getAbsolutePath();
+			    imgPath.setText(filename);
+			    try {
+			        ImageIcon ii =new ImageIcon(ImageUtil.scaleImage(120, 120, ImageIO.read(new File(f.getAbsolutePath()))));//get the image from file chooser and scale it to match JLabel size
+			        jLabelIcon.setIcon(ii);
+			        bi.setBounds(400, 100, 350, 350);
+			        btOK.setBounds( 115, 250, 60, 23);
+			    } catch (Exception ex) {
+			        ex.printStackTrace();
+			    }
+			}
+				
+			
+		});
+		while( foi != 2 ){
+			btOK.addActionListener( new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+						foi = 2;
+						bi.setVisible(false);
+				}
+			});
+
+		} 
+		HashMap<String, Object> hp = new HashMap<String, Object>();
+		hp.put( "nome", nomeUsuario.getText());
+		hp.put( "imagem", jLabelIcon.getIcon() );
+		
+		return hp;
 	}
 }

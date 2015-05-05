@@ -1,7 +1,8 @@
-package br.com.chat.interfaces;
+package br.com.chat.util;
 
 import java.awt.Container;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -83,5 +84,12 @@ public class BaseInterface extends JFrame {
 		
 		return lbl;
 	}
+
+	public JButton getJbutton(String string, int x, int y, int largura, int altura ) {
+		JButton bi = new JButton( string );
+		bi.setBounds( x, y, largura, altura);
+		return bi;
+	}
+
 
 }
