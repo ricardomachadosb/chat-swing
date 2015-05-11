@@ -1,16 +1,10 @@
 package br.com.chat.client;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,8 +12,11 @@ import javax.swing.JTextField;
 
 import org.json.JSONObject;
 
+import br.com.chat.eventos.EventoBtnConect;
+import br.com.chat.eventos.EventoBtnImg;
+import br.com.chat.eventos.EventoBtnInitServer;
+import br.com.chat.interfaces.BaseInterface;
 import br.com.chat.servidor.Servidor;
-import br.com.chat.util.BaseInterface;
 import br.com.chat.util.ImageUtil;
 
 
@@ -78,46 +75,14 @@ public class ClienteChat extends BaseInterface {
 		getContentPane().add( btConnect );
 		getContentPane().add( btInitServer );
 		
-		btConnect.addActionListener( new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				conectar();
-			}
-		});
-		
-		btInitServer.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				servidor.initServer(nrPorta, btInitServer);
-			}
-		});
-		
-		btImg.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-			    JFileChooser chooser = new JFileChooser();
-			    chooser.showOpenDialog(null);
-			    File f = chooser.getSelectedFile();
-			    String filename = f.getAbsolutePath();
-			    imgPath.setText(filename);
-			    try {
-			        ImageIcon ii =new ImageIcon(ImageUtil.scaleImage(120, 120, ImageIO.read(new File(f.getAbsolutePath()))));//get the image from file chooser and scale it to match JLabel size
-			        jLabelIcon.setIcon(ii);
-			        btConnect.setBounds(160, linha + 140, 100, 23 );
-			        btInitServer.setBounds(30, linha + 140, 110, 23);
-			        setBounds(400, 100, 350, 350);
-			    } catch (Exception ex) {
-			        ex.printStackTrace();
-			    }
-			}
-		});
+		btConnect.addActionListener(new EventoBtnConect(this));
+		btInitServer.addActionListener(new EventoBtnInitServer(servidor, nrPorta, btInitServer));
+		btImg.addActionListener(new EventoBtnImg(imgPath, jLabelIcon, btConnect, btInitServer, linha, this));
 		
 		setVisible( true );
 	}
 	
-	protected void conectar() {
+	public void conectar() {
 
 		String end = endereco.getText().trim();
 		String prt = nrPorta.getText().trim();

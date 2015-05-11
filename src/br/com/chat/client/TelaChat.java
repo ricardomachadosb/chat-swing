@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import br.com.chat.util.BaseInterface;
+import br.com.chat.interfaces.BaseInterface;
 import br.com.chat.util.ImageUtil;
 
 

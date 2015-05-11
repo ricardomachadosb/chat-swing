@@ -23,6 +23,8 @@ import javax.swing.JTextField;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import br.com.chat.interfaces.BaseInterface;
+
 /**
  * @author ricardo
  *

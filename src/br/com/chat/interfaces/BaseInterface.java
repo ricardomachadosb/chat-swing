@@ -1,4 +1,4 @@
-package br.com.chat.util;
+package br.com.chat.interfaces;
 
 import java.awt.Container;
 
@@ -47,7 +47,7 @@ public class BaseInterface extends JFrame {
 		return saltoLinha;
 	}
 	
-	protected JTextField getJTextField( int largura ) {
+	public JTextField getJTextField( int largura ) {
 
 		JTextField tf = new JTextField();
 		tf.setBounds( 160, linha, largura, 23 );
@@ -59,15 +59,15 @@ public class BaseInterface extends JFrame {
 		return linha += saltoLinha;
 	}
 	
-	protected JLabel getJLabel( String label ) {
+	public JLabel getJLabel( String label ) {
 		return( getJLabel( linha + saltoLinha, label ) );
 	}
 	
-	protected JLabel getJLabel( String label, int largura ) {
+	public JLabel getJLabel( String label, int largura ) {
 		return( getJLabel( linha + saltoLinha, label, largura ) );
 	}
 
-	protected JLabel getJLabel( int linha, String label ) {
+	public JLabel getJLabel( int linha, String label ) {
 
 		this.linha = linha;
 		JLabel lbl = new JLabel( label );
