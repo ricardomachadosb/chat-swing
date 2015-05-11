@@ -30,6 +30,8 @@ public class Recebedor extends Thread {
 	private ImageIcon imagemCliente;
 	private ImageIcon imagemServidor;
 	
+	private JSONArray imagemClienteJsonFormat;
+	
 	@Override
 	public void run() {
 		
@@ -46,7 +48,8 @@ public class Recebedor extends Thread {
 
 					switch( rec.getInt( "nroTransacao" ) ) {
 						case 1: if( rec.has( "imagem" ) ){
-									setCliente( ImageUtil.getImageIcon((JSONArray) rec.get( "imagem" )));
+									imagemClienteJsonFormat  = (JSONArray) rec.get( "imagem" );
+									setCliente( ImageUtil.getImageIcon(imagemClienteJsonFormat));
 									confirmaChat(rec.getString( "mensagem" ) );
 								}else{
 									confirmaChat(rec.getString( "mensagem" ));
@@ -55,10 +58,12 @@ public class Recebedor extends Thread {
 						case 3:
 							this.nomeContato = rec.getString( "mensagem" );
 							if( rec.has("imagemServidor")){
+								
 								setImagemServidor(ImageUtil.getImageIcon((JSONArray) rec.get( "imagemServidor" )));
 							}
 							if( rec.has( "imagemCliente" ) ){
-								setImagemCliente(ImageUtil.getImageIcon((JSONArray) rec.get( "imagemCliente" )));
+								imagemClienteJsonFormat  = (JSONArray) rec.get( "imagemCliente" );
+								setImagemCliente(ImageUtil.getImageIcon(imagemClienteJsonFormat));
 							}
 							new TelaChat(socket, 300, nomeUsuario, this,  this.imagemServidor,  this.imagemCliente); 
 							break;
@@ -94,10 +99,11 @@ public class Recebedor extends Thread {
 		HashMap<String, Object> coisas = ImageUtil.getJframe();
 		setServidor( (ImageIcon) coisas.get( "imagem" ) );
 		String nome = (String) coisas.get("nome");
+		String nomeImg = (String) coisas.get("nomeImagem");
 		TelaChat t = new TelaChat(socket, 555, nome, this, this.cliente, this.servidor);
 		nomeContato = nomeUsuario;
 		this.nomeUsuario = nome;
-		t.informaConexaoAceita(nome, servidor, cliente);
+		t.informaConexaoAceita(nome, servidor, imagemClienteJsonFormat, nomeImg);
 	}
 	
 	public void setSocket(Socket socket) {

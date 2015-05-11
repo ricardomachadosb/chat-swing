@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import br.com.chat.util.BaseInterface;
@@ -120,11 +121,12 @@ public class TelaChat extends BaseInterface implements WindowListener {
 			dos.writeUTF( transacao.toString() );
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			JOptionPane.showMessageDialog( this, "Não foi possível enviar sua mensagem: " + e.getMessage() );
 		}
 	}
 	
-	public void informaConexaoAceita(String nome, ImageIcon imagemServidor, ImageIcon ImagemCliente){
+	public void informaConexaoAceita(String nome, ImageIcon imagemServidor, JSONArray ImagemClienteJasonFormat, String nomeImagemServidor){
 		try {
 			OutputStream os = socket.getOutputStream();
 			DataOutputStream dos = new DataOutputStream( os );
@@ -132,12 +134,14 @@ public class TelaChat extends BaseInterface implements WindowListener {
 			JSONObject transacao = new JSONObject();
 			transacao.put( "nroTransacao", 3);
 			transacao.put( "mensagem", nome );
-				if( imagemServidor != null ) transacao.put( "imagemServidor", ImageUtil.iconToByte( imagemServidor ) );
-				if( ImagemCliente != null) transacao.put( "imagemCliente", ImageUtil.iconToByte( ImagemCliente ) );
+				if( imagemServidor != null ) transacao.put( "imagemServidor", ImageUtil.iconToByte( imagemServidor, ImageUtil.getFileExtension(nomeImagemServidor)));
+				if( ImagemClienteJasonFormat != null) transacao.put( "imagemCliente", ImagemClienteJasonFormat );
 			
 			dos.writeUTF( transacao.toString() );
 			
 		} catch (Exception e) {
+			e.printStackTrace();
+			
 			JOptionPane.showMessageDialog( this, "Não foi possível enviar sua mensagem: " + e.getMessage() );
 		}
 	}
@@ -157,6 +161,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 			
 			dos.writeUTF( transacao.toString() );
 		} catch (Exception e) {
+			e.printStackTrace();
 			JOptionPane.showMessageDialog( this, "Não foi possível enviar sua mensagem: " + e.getMessage() );
 		}
 	}

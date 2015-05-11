@@ -170,12 +170,14 @@ public class ClienteChat extends BaseInterface {
 			transacao.put( "mensagem", nomeUsuario.getText());
 			
 			if( jLabelIcon.getIcon() != null ){
-				transacao.put( "imagem", ImageUtil.iconToByte(jLabelIcon.getIcon()));
+				
+				transacao.put( "imagem", ImageUtil.iconToByte(jLabelIcon.getIcon(), ImageUtil.getFileExtension(imgPath.getText())));
 			}
 
 			dos.writeUTF( transacao.toString() );
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			JOptionPane.showMessageDialog( this, "Não foi possível enviar sua mensagem: " + e.getMessage() );
 		}
 	}

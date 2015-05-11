@@ -35,11 +35,12 @@ public class ImageUtil {
 	 * @throws IOException 
 	 * @throws JSONException 
 	 */
-	public static byte[] iconToByte(Icon icon) throws IOException, JSONException {
+	public static byte[] iconToByte(Icon icon, String imgFormat) throws IOException, JSONException {
 		ImageIcon imgIcon = (ImageIcon)icon;
 		BufferedImage image = (BufferedImage)((Image) imgIcon.getImage());
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
-		ImageIO.write(image, "png", baos);
+		imgFormat = (imgFormat == null ? "png" : imgFormat);
+		ImageIO.write(image, imgFormat, baos);
 		byte[] u = baos.toByteArray();
 		return u;
 		
@@ -87,6 +88,9 @@ public class ImageUtil {
 		return new ImageIcon(ImageIO.read(new ByteArrayInputStream(objectToBytArray(j))));
 	}
 	
+	/**
+	 * @return
+	 */
 	public static HashMap<String, Object> getJframe(){
 		JTextField nomeUsuario;
 		final JButton btOK;
@@ -141,7 +145,13 @@ public class ImageUtil {
 		HashMap<String, Object> hp = new HashMap<String, Object>();
 		hp.put( "nome", nomeUsuario.getText());
 		hp.put( "imagem", jLabelIcon.getIcon() );
+		hp.put( "nomeImagem", imgPath.getText() );
 		
 		return hp;
+	}
+	
+	public static String getFileExtension(String fileName){
+		String[] splitedFile= fileName.split("\\.");
+		return splitedFile[splitedFile.length - 1];
 	}
 }
