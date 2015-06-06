@@ -1,6 +1,7 @@
 package br.com.chat.client;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import javax.swing.JTextField;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import br.com.chat.util.ImageUtil;
+import br.com.chat.util.Utilities;
 
 public class Recebedor extends Thread {
 	private Socket socket;
@@ -29,9 +30,46 @@ public class Recebedor extends Thread {
 	private ImageIcon cliente;
 	private ImageIcon imagemCliente;
 	private ImageIcon imagemServidor;
+	private File file;
+	private String fileName;
+	private JButton uploadButton;
 	
+	public JButton getUploadButton() {
+		return uploadButton;
+	}
+
+	public void setUploadButton(JButton uploadButton) {
+		this.uploadButton = uploadButton;
+	}
+
+	JSONArray arquivo = new JSONArray();
+	
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
 	private JSONArray imagemClienteJsonFormat;
 	
+	public JSONArray getImagemClienteJsonFormat() {
+		return imagemClienteJsonFormat;
+	}
+
+	public void setImagemClienteJsonFormat(JSONArray imagemClienteJsonFormat) {
+		this.imagemClienteJsonFormat = imagemClienteJsonFormat;
+	}
+
 	@Override
 	public void run() {
 		
@@ -47,28 +85,55 @@ public class Recebedor extends Thread {
 					JSONObject rec = new JSONObject( msg );
 
 					switch( rec.getInt( "nroTransacao" ) ) {
+						case -1: 
+							JOptionPane.showMessageDialog( null, "O usuário recusou.");
+							break;
 						case 1: if( rec.has( "imagem" ) ){
 									imagemClienteJsonFormat  = (JSONArray) rec.get( "imagem" );
-									setCliente( ImageUtil.getImageIcon(imagemClienteJsonFormat));
-									confirmaChat(rec.getString( "mensagem" ) );
+									setCliente( Utilities.getImageIcon(imagemClienteJsonFormat));
+									confirmaChat(rec.getString( "nome" ) );
 								}else{
-									confirmaChat(rec.getString( "mensagem" ));
+									confirmaChat(rec.getString( "nome" ));
 								}
 							break;
-						case 3:
-							this.nomeContato = rec.getString( "mensagem" );
-							if( rec.has("imagemServidor")){
+						case 2:
+							this.nomeContato = rec.getString( "nome" );
+							if( rec.has("imagem")){
 								
-								setImagemServidor(ImageUtil.getImageIcon((JSONArray) rec.get( "imagemServidor" )));
-							}
-							if( rec.has( "imagemCliente" ) ){
-								imagemClienteJsonFormat  = (JSONArray) rec.get( "imagemCliente" );
-								setImagemCliente(ImageUtil.getImageIcon(imagemClienteJsonFormat));
+								setImagemServidor(Utilities.getImageIcon((JSONArray) rec.get( "imagem" )));
 							}
 							new TelaChat(socket, 300, nomeUsuario, this,  this.imagemServidor,  this.imagemCliente); 
 							break;
-						case 2: areaChat.setText( areaChat.getText() + nomeContato + " diz:" + rec.getString( "mensagem" ) + "\n" );
+						case 3: areaChat.setText( areaChat.getText() + nomeContato + " diz:" + rec.getString( "mensagem" ) + "\n" );
 							    break;
+						case 4:
+							JSONArray file = rec.getJSONArray("files");
+							for (int i = 0; i < file.length(); i++) {
+								arquivo.put(file.get(i));
+						    }
+							break;
+						case 5:
+							this.uploadButton.setText( "Enviar Arquivo" );
+							this.uploadButton.setEnabled( true );
+							break;
+						case 6:
+							areaChat.setText(areaChat.getText() + "\n Concluido");
+							break;
+						case 8:
+							receivedFileRequest( rec.getString( "fileName" ) );
+							break;
+						case 9:
+							Utilities.downloadFile(this.fileName, arquivo);
+							arquivo = new JSONArray();
+							Utilities.sendPackage( this.socket, 5);
+							this.uploadButton.setText( "Enviar Arquivo" );
+							this.uploadButton.setEnabled( true );
+							break;
+						case 10:
+							Utilities.uploadFile( getFile().getAbsolutePath(), socket );
+							this.uploadButton.setText( "Enviando..." );
+							this.uploadButton.setEnabled( false );
+							break;
 						case 11: areaChat.setText( areaChat.getText() + "\n ATENÇÂO: o usuário remoto desconectou" );
 								texto.setEnabled( false );
 								btEnviar.setEnabled( false );
@@ -89,21 +154,42 @@ public class Recebedor extends Thread {
 		switch(resp){
 			case 0: confirmaChatYes(nomeUsuario);
 				break;
-			//TODO tratar o case nada
+			case -1: Utilities.sendPackage( this.socket, -1);
+				break;
 		}
 	}
 	/**
 	 * 
 	 */
 	public void confirmaChatYes(String nomeUsuario){
-		HashMap<String, Object> coisas = ImageUtil.getJframe();
+		HashMap<String, Object> coisas = Utilities.getJframe();
 		setServidor( (ImageIcon) coisas.get( "imagem" ) );
 		String nome = (String) coisas.get("nome");
 		String nomeImg = (String) coisas.get("nomeImagem");
 		TelaChat t = new TelaChat(socket, 555, nome, this, this.cliente, this.servidor);
 		nomeContato = nomeUsuario;
 		this.nomeUsuario = nome;
-		t.informaConexaoAceita(nome, servidor, imagemClienteJsonFormat, nomeImg);
+		t.informaConexaoAceita(nome, servidor, nomeImg);
+	}
+	
+	/**
+	 * Used when receive a file upload request.
+	 * 
+	 * @param name
+	 */
+	private void receivedFileRequest( String fileName ) {
+		int resp = JOptionPane.showConfirmDialog( null, "O usuário " + " solicita a transferiencia do arquivo: " + fileName, null, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		switch (resp) {
+		case 0:
+			this.fileName = fileName;
+			Utilities.sendPackage( this.socket, 10);
+			this.uploadButton.setText( "Enviando..." );
+			this.uploadButton.setEnabled( false );
+			break;
+		default:
+			Utilities.sendPackage( this.socket, -1);
+			break;
+		}
 	}
 	
 	public void setSocket(Socket socket) {

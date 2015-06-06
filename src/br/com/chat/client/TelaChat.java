@@ -5,22 +5,24 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import br.com.chat.interfaces.BaseInterface;
-import br.com.chat.util.ImageUtil;
+import br.com.chat.util.Utilities;
 
 
 public class TelaChat extends BaseInterface implements WindowListener {
@@ -33,8 +35,16 @@ public class TelaChat extends BaseInterface implements WindowListener {
 	private Recebedor recebedor;
 	
 	private JTextArea areaChat;
+	
+	public JTextArea getAreaChat() {
+		return areaChat;
+	}
+
+
 	private JTextField texto;
 	private JButton btEnviar;
+	
+	private JButton uploadButton;
 	
 	public TelaChat( Socket socket, int coluna, String titulo, Recebedor recebedor, ImageIcon imagemPessoal, ImageIcon imagemRemota ) {
 		
@@ -79,6 +89,17 @@ public class TelaChat extends BaseInterface implements WindowListener {
 				enviaTexto();
 			}
 		});
+		
+		getContentPane().add( uploadButton = getJbutton( "Send File", 500, 320, 120, 23 ) );
+		uploadButton.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				uploadRequest();
+			}
+		});
+		
+		recebedor.setUploadButton(uploadButton);
 
 		setVisible( true );
 		addWindowListener( this );
@@ -115,7 +136,7 @@ public class TelaChat extends BaseInterface implements WindowListener {
 			DataOutputStream dos = new DataOutputStream( os );
 
 			JSONObject transacao = new JSONObject();
-			transacao.put( "nroTransacao", 2 );
+			transacao.put( "nroTransacao", 3 );
 			transacao.put( "mensagem", txt );
 			
 			dos.writeUTF( transacao.toString() );
@@ -126,17 +147,15 @@ public class TelaChat extends BaseInterface implements WindowListener {
 		}
 	}
 	
-	public void informaConexaoAceita(String nome, ImageIcon imagemServidor, JSONArray ImagemClienteJasonFormat, String nomeImagemServidor){
+	public void informaConexaoAceita(String nome, ImageIcon imagemServidor, String nomeImagemServidor){
 		try {
 			OutputStream os = socket.getOutputStream();
 			DataOutputStream dos = new DataOutputStream( os );
 
 			JSONObject transacao = new JSONObject();
-			transacao.put( "nroTransacao", 3);
-			transacao.put( "mensagem", nome );
-				if( imagemServidor != null ) transacao.put( "imagemServidor", ImageUtil.iconToByte( imagemServidor, ImageUtil.getFileExtension(nomeImagemServidor)));
-				if( ImagemClienteJasonFormat != null) transacao.put( "imagemCliente", ImagemClienteJasonFormat );
-			
+			transacao.put( "nroTransacao", 2);
+			transacao.put( "nome", nome );
+				if( imagemServidor != null ) transacao.put( "imagem", Utilities.iconToByte( imagemServidor, Utilities.getFileExtension(nomeImagemServidor)));
 			dos.writeUTF( transacao.toString() );
 			
 		} catch (Exception e) {
@@ -164,6 +183,19 @@ public class TelaChat extends BaseInterface implements WindowListener {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog( this, "Não foi possível enviar sua mensagem: " + e.getMessage() );
 		}
+	}
+	
+	/**
+	 * Send a upload request.
+	 */
+	protected void uploadRequest(){
+		JFileChooser chooser = new JFileChooser();
+	    chooser.showOpenDialog(null);
+	    File f = chooser.getSelectedFile();
+	    recebedor.setFile( f );
+		HashMap<String, Object> transationItens = new HashMap<String, Object>();
+		transationItens.put( "fileName", f.getName());
+		Utilities.sendPackage( this.socket, 8, transationItens );
 	}
 
 	@Override

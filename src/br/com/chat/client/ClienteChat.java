@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,7 +18,7 @@ import br.com.chat.eventos.EventoBtnImg;
 import br.com.chat.eventos.EventoBtnInitServer;
 import br.com.chat.interfaces.BaseInterface;
 import br.com.chat.servidor.Servidor;
-import br.com.chat.util.ImageUtil;
+import br.com.chat.util.Utilities;
 
 
 public class ClienteChat extends BaseInterface {
@@ -132,11 +133,11 @@ public class ClienteChat extends BaseInterface {
 
 			JSONObject transacao = new JSONObject();
 			transacao.put( "nroTransacao", 1 );
-			transacao.put( "mensagem", nomeUsuario.getText());
+			transacao.put( "nome", nomeUsuario.getText());
 			
 			if( jLabelIcon.getIcon() != null ){
-				
-				transacao.put( "imagem", ImageUtil.iconToByte(jLabelIcon.getIcon(), ImageUtil.getFileExtension(imgPath.getText())));
+				transacao.put( "imagem", Utilities.iconToByte(jLabelIcon.getIcon(), Utilities.getFileExtension(imgPath.getText())));
+				this.recebedor.setImagemCliente( (ImageIcon)jLabelIcon.getIcon());
 			}
 
 			dos.writeUTF( transacao.toString() );
